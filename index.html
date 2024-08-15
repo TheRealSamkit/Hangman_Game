@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hangman Game</title>
+  <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon">
+  <link rel="stylesheet" href="hang.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body>
+  <button type="button" id="selector" class="playAgain selector" title="Start a new game">
+    Start Game
+  </button>
+  <div id="starter" class="starter">
+    <h2 style="width: auto; text-align: center">Select Category</h2>
+    <button id="animals-btn" class="playAgain" title="Play a game with animal names">Animals Game</button>
+    <button id="birds-btn" class="playAgain" title="Play a game with bird names">Birds Game</button>
+    <button id="indian-btn" class="playAgain" title="Play a game with Indian names and places">Indian Game</button>
+    <button id="fruits-btn" class="playAgain" title="Play a game with fruit names">Fruits Game</button>
+    <button id="vegetables-btn" class="playAgain" title="Play a game with vegetable names">Vegetables Game</button>
+  </div>
+  <div class="container" id="container">
+    <button type="button" class="sound" id="stopSounds"><i class="fa-solid fa-volume-high -sound"></i></button>
+    <button type="button" class="music" id="music"><i class="fa-solid fa-music -music"></i></button>
+    <h1 style="margin-bottom: 10px; color: #fff">Hangman Game!</h1>
+    <div class="flex">
+      <div>
+        <canvas id="hangMan" class="hang" title="Canvas for drawing the hangman"></canvas>
+      </div>
+      <div class="game">
+        <div class="word" id="blank" title="Displays the current word with blanks for guessed letters"></div>
+        <div class="keyboard" id="keyboard" title=""></div>
+      </div>
+    </div>
+    <p id="message" title="Displays game messages such as win/lose status"></p>
+    <div class="btnhold">
+      <button id="playAgain" class="playAgain btn1" title="Restart the game">Play Again!</button>
+      <button type="button" class="btn1 playAgain" id="hint-btn" title="Get a hint for the current word">Get Hint <i
+          class="fa-regular fa-lightbulb"></i></button>
+    </div>
+    <a href="https://github.com/Samkit999yt/HangMan-Game" class="love" title="View the source code on GitHub">Made with
+      💖 by Samkit Jain</a>
+  </div>
+  <div class="pop-up" id="popup">
+    <div class="popup-content">
+      <h2>Hint</h2>
+      <span id="close-hint" class="close" title="Close this hint popup">&times;</span>
+      <p id="output" title="Displays the hint for the current word"></p>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+  <script src="hang.js" type="module"></script>
+</body>
+
+</html>
