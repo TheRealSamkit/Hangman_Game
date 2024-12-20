@@ -1,4 +1,5 @@
 import { categories, audioList } from "./constant.js";
+import { con_animation, key_animation, hang_animation, pop_up_animation, body_animation, music_animation, bounce_effect } from "./animation.js";
 
 let getbutton = true;
 let music = false;
@@ -10,6 +11,7 @@ let correctGuesses = 0;
 let falseGuess = 0;
 let previousGuess = "";
 let hint = "";
+let category = ["animals", "birds", "indian", "fruits", "vegetables"]
 let { click, start, bg, shabash, wrong, over, correct } = audioList;
 
 const selectorElement = document.getElementById("selector");
@@ -25,28 +27,22 @@ const playAgainButton = document.getElementById("playAgain");
 const musicElement = document.getElementById("music");
 const hintButton = document.getElementById("hint-btn");
 const closeHintButton = document.getElementById("close-hint");
-const animalButton = document.getElementById("animals-btn");
-const birdsButton = document.getElementById("birds-btn");
-const indianButton = document.getElementById("indian-btn");
-const fruitsButton = document.getElementById("fruits-btn");
-const vegetablesButton = document.getElementById("vegetables-btn");
 const stopSoundsButton = document.getElementById("stopSounds");
 const ctx = hangmanCanvas.getContext("2d");
 
 document.addEventListener("DOMContentLoaded", () => {
   selectorElement.addEventListener("click", () => {
     selectorElement.style.display = "none";
-    starterElement.style.display = "flex";
+    containerElement.style.display = "flex";
+    startGame();
     start.currentTime = 0.8;
     start.play();
     bg.play();
+    con_animation();
+    // body_animation();
+    bounce_effect();
   });
 
-  animalButton.addEventListener("click", () => startGame("animals"));
-  birdsButton.addEventListener("click", () => startGame("birds"));
-  indianButton.addEventListener("click", () => startGame("indian"));
-  fruitsButton.addEventListener("click", () => startGame("fruits"));
-  vegetablesButton.addEventListener("click", () => startGame("vegetables"));
   hintButton.addEventListener("click", opnHint);
   closeHintButton.addEventListener("click", clsHint);
   playAgainButton.addEventListener("click", resetGame);
@@ -56,9 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const soundsStarted = () => {
-  start.volume = 0.3;
+  start.volume = 0.050;
 
-  bg.volume = 0.3;
+  bg.volume = 0.0;
   bg.loop = true;
 
   correct.volume = 0.4;
@@ -75,16 +71,15 @@ const soundsStarted = () => {
   sound = true;
 };
 
-const startGame = (category) => {
+const startGame = () => {
+  click.currentTime = 0.153;
   click.play();
-  currentCategory = categories[category];
-  starterElement.style.display = "none";
-  containerElement.style.display = "flex";
   initializeKeyboard();
   wordPicker();
 };
 
 const wordPicker = () => {
+  currentCategory = categories[category[rand(category.length)]];
   const idx = rand(currentCategory.words.length);
   randWord = currentCategory.words[idx];
   hint = currentCategory.hints[idx];
@@ -107,10 +102,12 @@ function initializeKeyboard() {
       button.value = letter;
       button.onclick = () => handleGuess(letter, button);
       letters.appendChild(button);
+
     });
 
     keyboardElement.appendChild(letters);
     getbutton = false;
+    key_animation();
   }
 }
 
@@ -133,6 +130,7 @@ const wordToGuess = () => {
 const handleGuess = (guess, element) => {
   if (previousGuess !== guess) {
     let guessedCorrectly = false;
+    click.currentTime = 0.153;
     click.play();
     randWord.split("").forEach((char, i) => {
       if (char === guess) {
@@ -140,6 +138,7 @@ const handleGuess = (guess, element) => {
         correctGuesses += 1;
         guessedCorrectly = true;
         over.currentTime = 1;
+        correct.currentTime = 0.150;
         correct.play();
       }
     });
@@ -168,17 +167,20 @@ const disableAllButtons = () => {
 const opnHint = () => {
   popupElement.style.display = "flex";
   outputElement.innerText = hint;
-  click.currentTime = 0;
+  click.currentTime = 0.153;
   click.play();
+  pop_up_animation();
 };
 
 const clsHint = () => {
   popupElement.style.display = "none";
+  click.currentTime = 0.153;
   click.play();
 };
 
 const stopAllSounds = () => {
   if (sound) {
+    click.currentTime = 0.153;
     click.play();
     for (const key in audioList) {
       if (audioList.hasOwnProperty(key)) {
@@ -196,6 +198,7 @@ const stopAllSounds = () => {
   } else {
     stopSoundsButton.innerHTML = '<i class="fa-solid fa-volume-high -sound"></i>';
     soundsStarted();
+    click.currentTime = 0.153;
     click.play();
     sound = true;
   }
@@ -207,6 +210,7 @@ const toggleAnimation = () => {
     musicElement.classList.add("-music2");
     music = false;
     bg.pause();
+    click.currentTime = 0.153;
     click.play();
   } else {
     musicElement.style.animation = "rotate 2s linear infinite";
@@ -215,6 +219,7 @@ const toggleAnimation = () => {
     music = true;
     bg.volume = 0.1;
     bg.play();
+    click.currentTime = 0.153;
     click.play();
   }
 };
@@ -296,6 +301,7 @@ const wrongGuess = () => {
   wrong.currentTime = 2;
   wrong.play();
   draw();
+  hang_animation();
 };
 const resetGame = () => {
   ctx.clearRect(0, 0, hangmanCanvas.width, hangmanCanvas.height);
@@ -307,6 +313,7 @@ const resetGame = () => {
   keyboardElement.innerHTML = "";
   wordPicker();
   initializeKeyboard();
+  click.currentTime = 0.153;
   click.play();
 };
 

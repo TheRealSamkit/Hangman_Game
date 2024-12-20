@@ -29,19 +29,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--primary-bg);
-}
-
-.starter {
-    height: auto;
-    width: auto;
-    padding: 26px;
-    font-weight: 600;
-    font-size: 1.7rem;
-    display: none;
-    outline: none;
-    flex-direction: column;
-    color: var(--text-color);
+    background-color: #1E1E1E; /* Initial background color */
+    animation: floatAndColorChange 6s ease-in-out infinite;
 }
 
 .selector {
@@ -61,6 +50,21 @@ body {
     justify-content: center;
     flex-direction: column;
     background-color: var(--secondary-bg);
+}
+
+@keyframes floatAndColorChange {
+    0% {
+        transform: translateY(0); /* Starting position */
+        background-color: #1E1E1E; /* Starting background color */
+    }
+    50% {
+        transform: translateY(-5px); /* Float upwards */
+        background-color: #2C2C2C; /* Change to a darker shade */
+    }
+    100% {
+        transform: translateY(0); /* Return to the original position */
+        background-color: #1E1E1E; /* Return to original color */
+    }
 }
 
 .music {
