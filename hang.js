@@ -15,7 +15,6 @@ let category = ["animals", "birds", "indian", "fruits", "vegetables"]
 let { click, start, bg, shabash, wrong, over, correct } = audioList;
 
 const selectorElement = document.getElementById("selector");
-const starterElement = document.getElementById("starter");
 const containerElement = document.getElementById("container");
 const keyboardElement = document.getElementById("keyboard");
 const blankElement = document.getElementById("blank");
@@ -54,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const soundsStarted = () => {
   start.volume = 0.050;
 
-  bg.volume = 0.0;
+  bg.volume = 0.050;
   bg.loop = true;
 
   correct.volume = 0.4;
@@ -138,7 +137,7 @@ const handleGuess = (guess, element) => {
         correctGuesses += 1;
         guessedCorrectly = true;
         over.currentTime = 1;
-        correct.currentTime = 0.150;
+        correct.currentTime = 0.155;
         correct.play();
       }
     });
@@ -217,7 +216,6 @@ const toggleAnimation = () => {
     musicElement.classList.remove("-music2");
     bg.loop = true;
     music = true;
-    bg.volume = 0.1;
     bg.play();
     click.currentTime = 0.153;
     click.play();
@@ -315,6 +313,7 @@ const resetGame = () => {
   initializeKeyboard();
   click.currentTime = 0.153;
   click.play();
+  refreshAnimation();
 };
 
 const confettiAnimation = () => {

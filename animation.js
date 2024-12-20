@@ -17,7 +17,7 @@ const key_animation = () => {
         opacity: [0, 1],  // Fade in from 0 to 1
         duration: 500,
         easing: 'easeOutExpo',
-        delay: anime.stagger(30)  // Delay the start of each letter animation
+        delay: anime.stagger(20)  // Delay the start of each letter animation
     });
 }
 
