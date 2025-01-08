@@ -1,4 +1,4 @@
-export { con_animation, key_animation, music_animation, hang_animation, pop_up_animation, body_animation, bounce_effect };
+export { con_animation, key_animation, music_animation, hang_animation, pop_up_animation, body_animation, bounce_effect, wrong_effect };
 
 const con_animation = () => {
     anime({
@@ -72,4 +72,16 @@ const bounce_effect = () => {
         easing: 'easeOutBounce', // Bounce easing
         delay: 200, // Delay before starting the animation
     });
+}
+
+const wrong_effect = () => {
+    anime({
+        targets: '.wrong',
+        scale: [0, 1],
+        opacity: [0, 1],
+        duration: 500,
+        easing: 'easeOutExpo',
+        duration: 1000,
+        delay: anime.stagger(100),
+    })
 }

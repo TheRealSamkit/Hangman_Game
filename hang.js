@@ -1,5 +1,5 @@
 import { categories, audioList } from "./constant.js";
-import { con_animation, key_animation, hang_animation, pop_up_animation, body_animation, music_animation, bounce_effect } from "./animation.js";
+import { con_animation, key_animation, hang_animation, pop_up_animation, body_animation, music_animation, bounce_effect, wrong_effect } from "./animation.js";
 
 let getbutton = true;
 let music = false;
@@ -11,6 +11,7 @@ let correctGuesses = 0;
 let falseGuess = 0;
 let previousGuess = "";
 let hint = "";
+let pickedWord = [];
 let category = ["animals", "birds", "indian", "fruits", "vegetables"]
 let { click, start, bg, shabash, wrong, over, correct } = audioList;
 
@@ -82,11 +83,15 @@ const wordPicker = () => {
   const idx = rand(currentCategory.words.length);
   randWord = currentCategory.words[idx];
   hint = currentCategory.hints[idx];
+  if (pickedWord.includes(randWord)) wordPicker();
+  if (pickedWord.length === 85) pickedWord = [];
+  pickedWord.unshift(randWord);
   wordToGuess();
 };
 
 const rand = (len) => {
-  return Math.floor(Math.random() * len);
+  const now = Date.now();  // Get the current timestamp in milliseconds
+  return Math.floor(now * Math.random()) % len; // Combine timestamp and random value
 };
 
 function initializeKeyboard() {
@@ -134,6 +139,9 @@ const handleGuess = (guess, element) => {
     randWord.split("").forEach((char, i) => {
       if (char === guess) {
         document.querySelectorAll(".guess")[i].innerHTML = guess.toUpperCase();
+        element.innerHTML = `${guess.toUpperCase()}<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" class="mark" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>`;
         correctGuesses += 1;
         guessedCorrectly = true;
         over.currentTime = 1;
@@ -142,7 +150,7 @@ const handleGuess = (guess, element) => {
       }
     });
 
-    if (!guessedCorrectly) wrongGuess();
+    if (!guessedCorrectly) wrongGuess(element, guess);
   }
 
   element.disabled = true;
@@ -294,12 +302,22 @@ const draw = () => {
   }
 };
 
-const wrongGuess = () => {
-  falseGuess += 1;
+const wrongGuess = (element, guess) => {
+  element.classList.add("wrong");
+  element.innerHTML = `${guess.toUpperCase()}<svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" class="mark" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="18" y1="6" x2="6" y2="18"/>
+  <line x1="6" y1="6" x2="18" y2="18"/>
+</svg>
+`
   wrong.currentTime = 2;
+  falseGuess += 1;
+  hang_animation();
+  wrong_effect();
   wrong.play();
   draw();
-  hang_animation();
+  setTimeout(() => {
+    element.classList.remove("wrong");
+  }, 1000);
 };
 const resetGame = () => {
   ctx.clearRect(0, 0, hangmanCanvas.width, hangmanCanvas.height);
@@ -313,37 +331,26 @@ const resetGame = () => {
   initializeKeyboard();
   click.currentTime = 0.153;
   click.play();
-  refreshAnimation();
 };
 
 const confettiAnimation = () => {
-  let duration = 5 * 1000;
-  let animationEnd = Date.now() + duration;
-  let defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+  const duration = 3000;
+  const animationEnd = Date.now() + duration;
+  const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-  function randomInRange(min, max) {
-    return Math.random() * (max - min) + min;
-  }
+  const interval = setInterval(() => {
+    const timeLeft = animationEnd - Date.now();
+    if (timeLeft <= 0) return clearInterval(interval);
 
-  let interval = setInterval(function () {
-    let timeLeft = animationEnd - Date.now();
-
-    if (timeLeft <= 0) {
-      return clearInterval(interval);
-    }
-
-    let particleCount = 50 * (timeLeft / duration);
-    confetti(
-      Object.assign({}, defaults, {
+    const particleCount = 50 * (timeLeft / duration);
+    const createConfetti = (x) =>
+      confetti({
+        ...defaults,
         particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-      })
-    );
-    confetti(
-      Object.assign({}, defaults, {
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-      })
-    );
+        origin: { x, y: Math.random() - 0.2 },
+      });
+    createConfetti(0.2);
+    createConfetti(0.8);
   }, 250);
-}
+};
+

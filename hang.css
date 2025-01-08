@@ -142,6 +142,13 @@ body {
     margin: 2px;
     text-align: center;
     cursor: pointer;
+    position: relative;
+}
+
+.mark{
+    position: absolute;
+    top: 8px;
+    left:1px;
 }
 
 .game {
