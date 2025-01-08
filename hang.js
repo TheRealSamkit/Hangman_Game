@@ -192,7 +192,7 @@ const stopAllSounds = () => {
     for (const key in audioList) {
       if (audioList.hasOwnProperty(key)) {
         const audio = audioList[key];
-        if (audio !== bg && audio !== click) {
+        if (audio !== bg) {
           audio.pause();
           audio.currentTime = 0;
           audio.volume = 0;
