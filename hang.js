@@ -17,6 +17,7 @@ let category = ["animals", "birds", "indian", "fruits", "vegetables"]
 let { click, start, bg, shabash, wrong, over, correct } = audioList;
 const alphabets = "abcdefghijklmnopqrstuvwxyz".split("");
 
+const overlay = document.getElementById('overlay');
 const selectorElement = document.getElementById("selector");
 const containerElement = document.getElementById("container");
 const keyboardElement = document.getElementById("keyboard");
@@ -100,6 +101,7 @@ const wordPicker = async () => {
     pickedWord.unshift(randWord);
   } else {
     try {
+      overlay.style.display = 'flex';
 
       const { randomWord, hint: apiHint } = await fetchRandomWordAndHint();
       randWord = randomWord.toLowerCase();
@@ -111,12 +113,14 @@ const wordPicker = async () => {
       randWord = "default";
       hint = "No hint available";
 
+    } finally {
+      overlay.style.display = 'none'; // Hide loader
     }
   }
   if (hint.includes(randWord) || hint.includes(
     randWord[0].toUpperCase() +
     randWord.slice(1))) {
-    hint = extractRelevantHint(hint);
+    hint = extractRelevantHint(hint, 149);
     hint = hint.replace(new RegExp(`\\b${randWord}\\b`, 'gi'), '[hidden]');
   }
 
@@ -131,7 +135,6 @@ const extractRelevantHint = (text, maxLength = 150) => {
   const sentences = text.split('.').filter(sentence => sentence.trim().length > 0);
   let hint = sentences[0].trim() + '.'; // Start with the first sentence
 
-  // Check if there is a second sentence and if both sentences fit within the maxLength
   if (sentences.length > 1) {
     const secondSentence = sentences[1].trim() + '.'; // Include the second sentence
 

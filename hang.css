@@ -346,7 +346,69 @@ h2 {
     margin: 1rem;
     color: var(--text-color);
 }
-
+/* Dark overlay */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+  }
+  
+  /* Loader Animation */
+  .loader {
+    width: 48px;
+    height: 48px;
+    display: block;
+    margin: 20px auto;
+    position: relative;
+    border: 3px solid #FFF;
+    border-radius: 50%;
+    box-sizing: border-box;
+    animation: animloader 2s linear infinite;
+  }
+  .loader::after {
+    content: '';  
+    box-sizing: border-box;
+    width: 6px;
+    height: 24px;
+    background: #FFF;
+    transform: rotate(-45deg);
+    position: absolute;
+    bottom: -20px;
+    left: 46px;
+  }
+  
+  @keyframes animloader {
+    0% {
+      transform: translate(-10px, -10px);
+    }
+    25% {
+      transform: translate(-10px, 10px);
+    }
+    50% {
+      transform: translate(10px, 10px);
+    }
+    75% {
+      transform: translate(10px, -10px);
+    }
+    100% {
+      transform: translate(-10px, -10px);
+    }
+  }
+      
+  /* Spinning animation */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
 /* Background for mobile devices */
 @media only screen and (max-width: 767px) {
     .container {
