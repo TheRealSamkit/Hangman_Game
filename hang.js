@@ -2,198 +2,122 @@ import { categories, audioList } from "./constant.js";
 import { con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect } from "./animation.js";
 import { fetchRandomWordAndHint } from "./api.js";
 
-let getbutton = true;
-let music = false;
-let sound = false;
-let currentCategory = {};
-let randWord = "";
-let previousGuess = "";
-let hint = "";
-let difficulty = "";
-let correctGuesses = 0;
-let falseGuess = 0;
-let pickedWord = [];
-let category = ["animals", "birds", "indian", "fruits", "vegetables"]
+let getbutton = true, music = false, sound = false, currentCategory = {};
+let randWord = "", previousGuess = "", hint = "", difficulty = "";
+let correctGuesses = 0, falseGuess = 0, pickedWord = [];
+let category = ["animals", "birds", "indian", "fruits", "vegetables"];
 let { click, start, bg, shabash, wrong, over, correct } = audioList;
 const alphabets = "abcdefghijklmnopqrstuvwxyz".split("");
 
-const overlay = document.getElementById('overlay');
-const selectorElement = document.getElementById("selector");
-const containerElement = document.getElementById("container");
-const keyboardElement = document.getElementById("keyboard");
-const blankElement = document.getElementById("blank");
-const messageElement = document.getElementById("message");
-const popupElement = document.getElementById("popup");
-const outputElement = document.getElementById("output");
-const hangmanCanvas = document.getElementById("hangMan");
-const playAgainButton = document.getElementById("playAgain");
-const musicElement = document.getElementById("music");
-const hintButton = document.getElementById("hint-btn");
-const closeHintButton = document.getElementById("close-hint");
-const stopSoundsButton = document.getElementById("stopSounds");
-const diffbtn = document.querySelectorAll(".ms");
-const diff = document.querySelector(".diff");
-const ctx = hangmanCanvas.getContext("2d");
-
-document.addEventListener("DOMContentLoaded", () => {
-  selectorElement.addEventListener("click", () => {
-    selectorElement.style.display = "none";
-    h1.classList.remove("hide");
-    diffbtn.forEach(element => {
-      element.classList.remove("hide");
-    });
-    start.currentTime = 0.8;
-    start.play();
-    bg.play();
-  });
-
-  hintButton.addEventListener("click", opnHint);
-  diffbtn.forEach((button) => button.addEventListener("click", (event) => startGame(event.target.dataset.mode)));
-  closeHintButton.addEventListener("click", clsHint);
-  playAgainButton.addEventListener("click", resetGame);
-  musicElement.addEventListener("click", toggleAnimation);
-  stopSoundsButton.addEventListener("click", stopAllSounds);
-  soundsStarted();
-});
-
-const soundsStarted = () => {
-  start.volume = 0.050;
-
-  bg.volume = 0.050;
-  bg.loop = true;
-
-  correct.volume = 0.4;
-
-  wrong.volume = 0.2;
-
-  click.volume = 0.7;
-
-  shabash.volume = 0.5;
-
-  over.volume = 0.5;
-
-  music = true;
-  sound = true;
+const elements = {
+  overlay: document.getElementById('overlay'),
+  selector: document.getElementById("selector"),
+  container: document.getElementById("container"),
+  keyboard: document.getElementById("keyboard"),
+  blank: document.getElementById("blank"),
+  message: document.getElementById("message"),
+  popup: document.getElementById("popup"),
+  output: document.getElementById("output"),
+  hangmanCanvas: document.getElementById("hangMan"),
+  playAgain: document.getElementById("playAgain"),
+  music: document.getElementById("music"),
+  hintButton: document.getElementById("hint-btn"),
+  closeHintButton: document.getElementById("close-hint"),
+  stopSoundsButton: document.getElementById("stopSounds"),
+  diffButtons: document.querySelectorAll(".ms"),
+  diff: document.querySelector(".diff"),
 };
+const ctx = elements.hangmanCanvas.getContext("2d");
 
-const startGame = (mode) => {
-  diff.classList.add("hide");
-  containerElement.style.display = "flex";
-  console.log(mode)
+document.addEventListener("DOMContentLoaded", init);
+
+function init() {
+  elements.selector.addEventListener("click", startScreen);
+  elements.hintButton.addEventListener("click", () => toggleHint(true));
+  elements.closeHintButton.addEventListener("click", () => toggleHint(false));
+  elements.playAgain.addEventListener("click", resetGame);
+  elements.music.addEventListener("click", toggleMusic);
+  elements.stopSoundsButton.addEventListener("click", toggleSounds);
+  elements.diffButtons.forEach(button => button.addEventListener("click", (e) => startGame(e.target.dataset.mode)));
+  setupSounds();
+}
+
+function startScreen() {
+  elements.selector.style.display = "none";
+  document.querySelector("h1").classList.remove("hide");
+  elements.diffButtons.forEach(button => button.classList.remove("hide"));
+  playSound(start, 0.8);
+  bg.play();
+}
+
+function setupSounds() {
+  start.volume = bg.volume = 0.05;
+  bg.loop = true;
+  correct.volume = 0.4;
+  wrong.volume = 0.2;
+  click.volume = 0.7;
+  shabash.volume = over.volume = 0.5;
+  music = sound = true;
+}
+
+function startGame(mode) {
+  elements.diff.classList.add("hide");
+  elements.container.style.display = "flex";
+  playSound(click, 0.153);
   difficulty = mode;
-  click.currentTime = 0.153;
-  click.play();
   initializeKeyboard();
-  wordPicker();
-
+  pickWord();
   con_animation();
   bounce_effect();
-};
+}
 
-const wordPicker = async () => {
+async function pickWord() {
   if (difficulty === "easy") {
     currentCategory = categories[category[rand(category.length)]];
     const idx = rand(currentCategory.words.length);
     randWord = currentCategory.words[idx];
     hint = currentCategory.hints[idx];
-    if (pickedWord.includes(randWord)) wordPicker();
+    if (pickedWord.includes(randWord)) return pickWord();
     if (pickedWord.length === 85) pickedWord = [];
     pickedWord.unshift(randWord);
   } else {
-    try {
-      overlay.style.display = 'flex';
-
-      const { randomWord, hint: apiHint } = await fetchRandomWordAndHint();
-      randWord = randomWord.toLowerCase();
-      hint = apiHint;
-
-    } catch (error) {
-
-      console.error("Error fetching random word and hint:", error);
-      randWord = "default";
-      hint = "No hint available";
-
-    } finally {
-      overlay.style.display = 'none'; // Hide loader
-    }
+    await fetchWordFromAPI();
   }
-  if (hint.includes(randWord) || hint.includes(
-    randWord[0].toUpperCase() +
-    randWord.slice(1))) {
-    hint = extractRelevantHint(hint, 149);
-    hint = hint.replace(new RegExp(`\\b${randWord}\\b`, 'gi'), '[hidden]');
-  }
+  processHint();
+  displayWord();
+}
 
-  if (hint.includes(':')) {
-    hint = removeTextBeforeColon(hint);
-  }
-
-  wordToGuess();
-};
-
-const extractRelevantHint = (text, maxLength = 150) => {
-  const sentences = text.split('.').filter(sentence => sentence.trim().length > 0);
-  let hint = sentences[0].trim() + '.'; // Start with the first sentence
-
-  if (sentences.length > 1) {
-    const secondSentence = sentences[1].trim() + '.'; // Include the second sentence
-
-    // Check if the combined length of both sentences is within maxLength
-    if ((hint + ' ' + secondSentence).length <= maxLength) {
-      hint += ' ' + secondSentence; // Include the second sentence fully
-    }
-  }
-
-  // If the first sentence alone exceeds the maxLength, truncate it
-  if (hint.length > maxLength) {
-    hint = hint.slice(0, maxLength).trim() + '...';
-  }
-
-  return hint;
-};
-
-const removeTextBeforeColon = (text) => {
-  const parts = text.split(':');
-  if (parts.length > 1 && parts[1].trim().length > 0) {
-    if (text.length < 1) {
-      return text = "No hint available";
-    }
-    return parts.slice(1).join(':').trim();
-  }
-};
-
-const rand = (len) => {
-  const now = Date.now();
-  return Math.floor(now * Math.random()) % len;
-};
-
-const initializeKeyboard = () => {
-  if (getbutton) {
-    const letters = document.createElement("ul");
-    letters.id = "alphabet";
-    alphabets.forEach((letter) => {
-      const button = document.createElement("button");
-      button.id = `letter-${letter}`;
-      button.innerHTML = letter.toUpperCase();
-      button.className = "letter";
-      button.value = letter;
-      button.onclick = () => handleGuess(letter, button);
-      letters.appendChild(button);
-
-    });
-
-    keyboardElement.appendChild(letters);
-    getbutton = false;
-    key_animation();
+async function fetchWordFromAPI() {
+  try {
+    elements.overlay.style.display = 'flex';
+    const { randomWord, hint: apiHint } = await fetchRandomWordAndHint();
+    randWord = randomWord.toLowerCase();
+    hint = apiHint;
+  } catch (error) {
+    console.error("Error fetching random word and hint:", error);
+    randWord = "default";
+    hint = "No hint available";
+  } finally {
+    elements.overlay.style.display = 'none';
   }
 }
 
-const wordToGuess = () => {
-  blankElement.innerHTML = "";
+function processHint() {
+  if (hint.includes(randWord) || hint.includes(capitalize(randWord))) {
+    hint = formatHint(hint, 149);
+    hint = hint.replace(new RegExp(`\\b${randWord}\\b`, 'gi'), '[hidden]');
+  }
+  if (hint.includes(':')) {
+    hint = hint.split(':').slice(1).join(':').trim() || "No hint available";
+  }
+}
+
+function displayWord() {
+  elements.blank.innerHTML = "";
   const correct = document.createElement("ul");
   correct.id = "my-word";
 
-  randWord.split("").forEach((char, i) => {
+  randWord.split("").forEach(char => {
     const guess = document.createElement("li");
     guess.className = "guess";
     guess.innerHTML = char === "-" ? "-" : "_";
@@ -201,29 +125,21 @@ const wordToGuess = () => {
   });
 
   correctGuesses = 0;
-  blankElement.appendChild(correct);
-};
+  elements.blank.appendChild(correct);
+}
 
-const handleGuess = (guess, element) => {
+function handleGuess(guess, element) {
   if (previousGuess !== guess) {
     let guessedCorrectly = false;
-    click.currentTime = 0.153;
-    click.play();
+    playSound(click, 0.153);
     randWord.split("").forEach((char, i) => {
       if (char === guess) {
-        document.querySelectorAll(".guess")[i].innerHTML = guess.toUpperCase();
-        element.innerHTML = `${guess.toUpperCase()}<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" class="mark" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 6L9 17l-5-5"/>
-      </svg>`;
-        correctGuesses += 1;
+        updateCorrectGuess(char, i, element);
         guessedCorrectly = true;
-        over.currentTime = 1;
-        correct.currentTime = 0.155;
-        correct.play();
       }
     });
 
-    if (!guessedCorrectly) wrongGuess(element, guess);
+    if (!guessedCorrectly) processWrongGuess(element, guess);
   }
 
   element.disabled = true;
@@ -231,183 +147,156 @@ const handleGuess = (guess, element) => {
   previousGuess = guess;
 
   if (correctGuesses === randWord.replace(/[^a-zA-Z]/g, "").length) {
-    messageElement.innerHTML = "Congratulations! You've won!";
-    disableAllButtons();
-    confettiAnimation();
-    shabash.play();
+    endGame(true);
   }
-};
+}
 
-const disableAllButtons = () => {
-  alphabets.forEach((letter) => {
-    document.getElementById(`letter-${letter}`).disabled = true;
-  });
-};
-
-const opnHint = () => {
-  popupElement.style.display = "flex";
-  outputElement.innerText = hint;
-  click.currentTime = 0.153;
-  click.play();
-  pop_up_animation();
-};
-
-const clsHint = () => {
-  popupElement.style.display = "none";
-  click.currentTime = 0.153;
-  click.play();
-};
-
-const stopAllSounds = () => {
-  if (sound) {
-    click.currentTime = 0.153;
-    click.play();
-    for (const key in audioList) {
-      if (audioList.hasOwnProperty(key)) {
-        const audio = audioList[key];
-        if (audio !== bg) {
-          audio.pause();
-          audio.currentTime = 0;
-          audio.volume = 0;
-          audio.loop = false;
-        }
-      }
-    }
-    stopSoundsButton.innerHTML = '<i class="fa-solid fa-volume-xmark -sound"></i>';
-    sound = false;
-  } else {
-    stopSoundsButton.innerHTML = '<i class="fa-solid fa-volume-high -sound"></i>';
-    soundsStarted();
-    click.currentTime = 0.153;
-    click.play();
-    sound = true;
-  }
-};
-
-const toggleAnimation = () => {
-  if (music) {
-    musicElement.style.animation = "none";
-    musicElement.classList.add("-music2");
-    music = false;
-    bg.pause();
-    click.currentTime = 0.153;
-    click.play();
-  } else {
-    musicElement.style.animation = "rotate 2s linear infinite";
-    musicElement.classList.remove("-music2");
-    bg.loop = true;
-    music = true;
-    bg.play();
-    click.currentTime = 0.153;
-    click.play();
-  }
-};
-
-const draw = () => {
-  const ctx = hangmanCanvas.getContext("2d");
-  ctx.clearRect(0, 0, hangmanCanvas.width, hangmanCanvas.height);
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "white";
-
-  if (falseGuess > 0) {
-    ctx.moveTo(15, 140);
-    ctx.lineTo(150, 140);
-    ctx.stroke();
-    ctx.clearRect(0, 0, 150, 138);
-  }
-  if (falseGuess > 1) {
-    ctx.moveTo(20, 20);
-    ctx.lineTo(20, 140);
-    ctx.moveTo(20, 50);
-    ctx.lineTo(50, 30);
-    ctx.stroke();
-    ctx.clearRect(60, 40, 110, 90);
-  }
-  if (falseGuess > 2) {
-    ctx.moveTo(10, 30);
-    ctx.lineTo(100, 30);
-    ctx.stroke();
-    ctx.clearRect(60, 40, 110, 90);
-  }
-  if (falseGuess > 3) {
-    ctx.beginPath();
-    ctx.arc(90, 30, 2, 0, 2 * Math.PI);
-    ctx.moveTo(90, 30);
-    ctx.lineTo(90, 70);
-    ctx.stroke();
-    ctx.clearRect(60, 69, 90, 70.03);
-  }
-  if (falseGuess > 4) {
-    ctx.clearRect(60, 69, 90, 70.03);
-    ctx.beginPath();
-    ctx.arc(90, 77, 7, 0, 2 * Math.PI);
-    ctx.stroke();
-  }
-  if (falseGuess > 5) {
-    ctx.moveTo(90, 83);
-    ctx.lineTo(90, 110);
-    ctx.stroke();
-  }
-  if (falseGuess > 6) {
-    ctx.moveTo(90, 87);
-    ctx.lineTo(80, 105);
-    ctx.moveTo(90, 87);
-    ctx.lineTo(100, 105);
-    ctx.stroke();
-  }
-  if (falseGuess > 7) {
-    ctx.moveTo(90, 110);
-    ctx.lineTo(80, 125);
-    ctx.moveTo(90, 110);
-    ctx.lineTo(100, 125);
-    ctx.stroke();
-  }
-
-  if (falseGuess >= 8) {
-    document.getElementById("message").innerHTML =
-      "Game Over! The correct word was " +
-      randWord[0].toUpperCase() +
-      randWord.slice(1);
-    over.currentTime = 1;
-    over.play();
-    alphabets.forEach((letter) => {
-      document.getElementById(`letter-${letter}`).disabled = true;
-    });
-  }
-};
-
-const wrongGuess = (element, guess) => {
+function processWrongGuess(element, guess) {
   element.classList.add("wrong");
   element.innerHTML = `${guess.toUpperCase()}<svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" class="mark" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
   <line x1="18" y1="6" x2="6" y2="18"/>
   <line x1="6" y1="6" x2="18" y2="18"/>
-</svg>
-`
-  wrong.currentTime = 2;
+</svg>`;
+  playSound(wrong, 2);
   falseGuess += 1;
   hang_animation();
   wrong_effect();
   wrong.play();
-  draw();
-  setTimeout(() => {
-    element.classList.remove("wrong");
-  }, 1000);
-};
-const resetGame = () => {
-  ctx.clearRect(0, 0, hangmanCanvas.width, hangmanCanvas.height);
-  correctGuesses = 0;
-  falseGuess = 0;
-  previousGuess = "";
-  messageElement.innerHTML = "";
-  getbutton = true;
-  keyboardElement.innerHTML = "";
-  wordPicker();
-  initializeKeyboard();
-  click.currentTime = 0.153;
-  click.play();
-};
+  drawHangman();
+  setTimeout(() => element.classList.remove("wrong"), 1000);
+}
 
-const confettiAnimation = () => {
+function endGame(won) {
+  elements.message.innerHTML = won ? "Congratulations! You've won!" : `Game Over! The correct word was ${capitalize(randWord)}`;
+  disableAllButtons();
+  if (won) {
+    confettiAnimation();
+    shabash.play();
+  } else {
+    playSound(over, 1);
+  }
+}
+
+function toggleHint(show) {
+  elements.popup.style.display = show ? "flex" : "none";
+  if (show) {
+    elements.output.innerText = hint;
+    playSound(click, 0.153);
+    pop_up_animation();
+  }
+}
+
+function toggleMusic() {
+  music = !music;
+  elements.music.style.animation = music ? "rotate 2s linear infinite" : "none";
+  elements.music.classList.toggle("-music2", !music);
+  if (music) {
+    bg.loop = true;
+    bg.play();
+  } else {
+    bg.pause();
+  }
+  playSound(click, 0.153);
+}
+
+function toggleSounds() {
+  sound = !sound;
+  if (sound) {
+    setupSounds();
+    elements.stopSoundsButton.innerHTML = '<i class="fa-solid fa-volume-high -sound"></i>';
+  } else {
+    muteAllSounds();
+    elements.stopSoundsButton.innerHTML = '<i class="fa-solid fa-volume-xmark -sound"></i>';
+  }
+  playSound(click, 0.153);
+}
+
+function muteAllSounds() {
+  Object.values(audioList).forEach(audio => {
+    if (audio !== bg) {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 0;
+    }
+  });
+}
+
+function drawHangman() {
+  ctx.clearRect(0, 0, elements.hangmanCanvas.width, elements.hangmanCanvas.height);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "white";
+
+  if (falseGuess > 0) drawLine(15, 140, 150, 140);
+  if (falseGuess > 1) {
+    drawLine(20, 20, 20, 140);
+    drawLine(20, 50, 50, 30);
+  }
+  if (falseGuess > 2) drawLine(10, 30, 100, 30);
+  if (falseGuess > 3) {
+    ctx.beginPath();
+    ctx.arc(90, 30, 2, 0, 2 * Math.PI);
+    ctx.stroke();
+    drawLine(90, 30, 90, 70);
+  }
+  if (falseGuess > 4) drawCircle(90, 77, 7);
+  if (falseGuess > 5) drawLine(90, 83, 90, 110);
+  if (falseGuess > 6) {
+    drawLine(90, 87, 80, 105);
+    drawLine(90, 87, 100, 105);
+  }
+  if (falseGuess > 7) {
+    drawLine(90, 110, 80, 125);
+    drawLine(90, 110, 100, 125);
+  }
+  if (falseGuess >= 8) endGame(false);
+}
+
+function drawLine(x1, y1, x2, y2) {
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+function drawCircle(x, y, radius) {
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, 2 * Math.PI);
+  ctx.stroke();
+}
+
+function playSound(audio, currentTime = 0) {
+  audio.currentTime = currentTime;
+  audio.play();
+}
+
+function updateCorrectGuess(char, i, element) {
+  document.querySelectorAll(".guess")[i].innerHTML = char.toUpperCase();
+  element.innerHTML = `${char.toUpperCase()}<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" class="mark" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 6L9 17l-5-5"/>
+  </svg>`;
+  correctGuesses += 1;
+  playSound(correct, 0.155);
+}
+
+function initializeKeyboard() {
+  if (getbutton) {
+    const letters = document.createElement("ul");
+    letters.id = "alphabet";
+    alphabets.forEach(letter => {
+      const button = document.createElement("button");
+      button.id = `letter-${letter}`;
+      button.innerHTML = letter.toUpperCase();
+      button.className = "letter";
+      button.value = letter;
+      button.onclick = () => handleGuess(letter, button);
+      letters.appendChild(button);
+    });
+    elements.keyboard.appendChild(letters);
+    getbutton = false;
+    key_animation();
+  }
+}
+
+function confettiAnimation() {
   const duration = 3000;
   const animationEnd = Date.now() + duration;
   const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -415,16 +304,54 @@ const confettiAnimation = () => {
   const interval = setInterval(() => {
     const timeLeft = animationEnd - Date.now();
     if (timeLeft <= 0) return clearInterval(interval);
-
     const particleCount = 50 * (timeLeft / duration);
-    const createConfetti = (x) =>
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x, y: Math.random() - 0.2 },
-      });
-    createConfetti(0.2);
-    createConfetti(0.8);
+    createConfetti(particleCount, 0.2);
+    createConfetti(particleCount, 0.8);
   }, 250);
-};
+}
 
+function createConfetti(particleCount, x) {
+  confetti({
+    ...defaults,
+    particleCount,
+    origin: { x, y: Math.random() - 0.2 },
+  });
+}
+
+function disableAllButtons() {
+  alphabets.forEach(letter => document.getElementById(`letter-${letter}`).disabled = true);
+}
+
+function formatHint(text, maxLength) {
+  const sentences = text.split('.').filter(sentence => sentence.trim().length > 0);
+  let hint = sentences[0].trim() + '.';
+
+  if (sentences.length > 1) {
+    const secondSentence = sentences[1].trim() + '.';
+    if ((hint + ' ' + secondSentence).length <= maxLength) {
+      hint += ' ' + secondSentence;
+    }
+  }
+
+  return hint.length > maxLength ? hint.slice(0, maxLength).trim() + '...' : hint;
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function rand(len) {
+  return Math.floor(Math.random() * len);
+}
+
+function resetGame() {
+  ctx.clearRect(0, 0, elements.hangmanCanvas.width, elements.hangmanCanvas.height);
+  correctGuesses = falseGuess = 0;
+  previousGuess = "";
+  elements.message.innerHTML = "";
+  getbutton = true;
+  elements.keyboard.innerHTML = "";
+  pickWord();
+  initializeKeyboard();
+  playSound(click, 0.153);
+}
