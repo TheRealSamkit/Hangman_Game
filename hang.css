@@ -130,6 +130,12 @@ body {
     margin: 5px;
 }
 
+.diff{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 .letter {
     display: inline-block;
     font-size: 1.5rem;
@@ -143,6 +149,10 @@ body {
     text-align: center;
     cursor: pointer;
     position: relative;
+}
+
+.hide{
+display: none;
 }
 
 .mark{
@@ -268,46 +278,6 @@ body {
     color: var(--text-color);
 }
 
-/* Background for mobile devices */
-@media only screen and (max-width: 767px) {
-    .container {
-        height: auto;
-        width: 100vw;
-    }
-
-    .hang {
-        height: auto;
-        width: 85vw;
-    }
-
-    .letter {
-        font-size: 1.5rem;
-        width: 2rem;
-        padding: 1px;
-        margin: 1px;
-    }
-
-    .game {
-        height: auto;
-        width: 65vw;
-    }
-
-    .word {
-        width: 65vw;
-        height: auto;
-    }
-
-    .pop-up {
-        height: 100%;
-        width: 100%;
-    }
-
-    .playAgain {
-        padding: 0 20px;
-        font-size: 1.2rem;
-    }
-}
-
 .flex {
     display: flex;
     align-items: center;
@@ -369,10 +339,60 @@ h2 {
     cursor: pointer;
 }
 
-#output {
+.output {
     font-size: 1.7rem;
     text-align: center;
     font-weight: 500;
     margin: 1rem;
     color: var(--text-color);
+}
+
+/* Background for mobile devices */
+@media only screen and (max-width: 767px) {
+    .container {
+        height: auto;
+        width: 100vw;
+    }
+
+    
+.output {
+    font-size: 1.3rem;
+}
+
+    .hang {
+        height: auto;
+        width: 85vw;
+    }
+
+    .letter {
+        font-size: 1.5rem;
+        width: 2rem;
+        padding: 1px;
+        margin: 1px;
+    }
+
+    .game {
+        height: auto;
+        width: 65vw;
+    }
+
+    .word {
+        width: 65vw;
+        height: auto;
+    }
+
+    .pop-up {
+        height: 100%;
+        width: 100%;
+    }
+
+    .playAgain {
+        padding: 0 20px;
+        font-size: 1.2rem;
+    }
+
+    .mark{
+        height: 0.99em;
+        width: 1.1em;    
+    }
 }

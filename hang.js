@@ -1,19 +1,21 @@
 import { categories, audioList } from "./constant.js";
-import { con_animation, key_animation, hang_animation, pop_up_animation, body_animation, music_animation, bounce_effect, wrong_effect } from "./animation.js";
+import { con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect } from "./animation.js";
+import { fetchRandomWordAndHint } from "./api.js";
 
 let getbutton = true;
 let music = false;
 let sound = false;
-const alphabets = "abcdefghijklmnopqrstuvwxyz".split("");
 let currentCategory = {};
 let randWord = "";
-let correctGuesses = 0;
-let falseGuess = 0;
 let previousGuess = "";
 let hint = "";
+let difficulty = "";
+let correctGuesses = 0;
+let falseGuess = 0;
 let pickedWord = [];
 let category = ["animals", "birds", "indian", "fruits", "vegetables"]
 let { click, start, bg, shabash, wrong, over, correct } = audioList;
+const alphabets = "abcdefghijklmnopqrstuvwxyz".split("");
 
 const selectorElement = document.getElementById("selector");
 const containerElement = document.getElementById("container");
@@ -28,22 +30,24 @@ const musicElement = document.getElementById("music");
 const hintButton = document.getElementById("hint-btn");
 const closeHintButton = document.getElementById("close-hint");
 const stopSoundsButton = document.getElementById("stopSounds");
+const diffbtn = document.querySelectorAll(".ms");
+const diff = document.querySelector(".diff");
 const ctx = hangmanCanvas.getContext("2d");
 
 document.addEventListener("DOMContentLoaded", () => {
   selectorElement.addEventListener("click", () => {
     selectorElement.style.display = "none";
-    containerElement.style.display = "flex";
-    startGame();
+    h1.classList.remove("hide");
+    diffbtn.forEach(element => {
+      element.classList.remove("hide");
+    });
     start.currentTime = 0.8;
     start.play();
     bg.play();
-    con_animation();
-    // body_animation();
-    bounce_effect();
   });
 
   hintButton.addEventListener("click", opnHint);
+  diffbtn.forEach((button) => button.addEventListener("click", (event) => startGame(event.target.dataset.mode)));
   closeHintButton.addEventListener("click", clsHint);
   playAgainButton.addEventListener("click", resetGame);
   musicElement.addEventListener("click", toggleAnimation);
@@ -71,30 +75,96 @@ const soundsStarted = () => {
   sound = true;
 };
 
-const startGame = () => {
+const startGame = (mode) => {
+  diff.classList.add("hide");
+  containerElement.style.display = "flex";
+  console.log(mode)
+  difficulty = mode;
   click.currentTime = 0.153;
   click.play();
   initializeKeyboard();
   wordPicker();
+
+  con_animation();
+  bounce_effect();
 };
 
-const wordPicker = () => {
-  currentCategory = categories[category[rand(category.length)]];
-  const idx = rand(currentCategory.words.length);
-  randWord = currentCategory.words[idx];
-  hint = currentCategory.hints[idx];
-  if (pickedWord.includes(randWord)) wordPicker();
-  if (pickedWord.length === 85) pickedWord = [];
-  pickedWord.unshift(randWord);
+const wordPicker = async () => {
+  if (difficulty === "easy") {
+    currentCategory = categories[category[rand(category.length)]];
+    const idx = rand(currentCategory.words.length);
+    randWord = currentCategory.words[idx];
+    hint = currentCategory.hints[idx];
+    if (pickedWord.includes(randWord)) wordPicker();
+    if (pickedWord.length === 85) pickedWord = [];
+    pickedWord.unshift(randWord);
+  } else {
+    try {
+
+      const { randomWord, hint: apiHint } = await fetchRandomWordAndHint();
+      randWord = randomWord.toLowerCase();
+      hint = apiHint;
+
+    } catch (error) {
+
+      console.error("Error fetching random word and hint:", error);
+      randWord = "default";
+      hint = "No hint available";
+
+    }
+  }
+  if (hint.includes(randWord) || hint.includes(
+    randWord[0].toUpperCase() +
+    randWord.slice(1))) {
+    hint = extractRelevantHint(hint);
+    hint = hint.replace(new RegExp(`\\b${randWord}\\b`, 'gi'), '[hidden]');
+  }
+
+  if (hint.includes(':')) {
+    hint = removeTextBeforeColon(hint);
+  }
+
   wordToGuess();
 };
 
-const rand = (len) => {
-  const now = Date.now();  // Get the current timestamp in milliseconds
-  return Math.floor(now * Math.random()) % len; // Combine timestamp and random value
+const extractRelevantHint = (text, maxLength = 150) => {
+  const sentences = text.split('.').filter(sentence => sentence.trim().length > 0);
+  let hint = sentences[0].trim() + '.'; // Start with the first sentence
+
+  // Check if there is a second sentence and if both sentences fit within the maxLength
+  if (sentences.length > 1) {
+    const secondSentence = sentences[1].trim() + '.'; // Include the second sentence
+
+    // Check if the combined length of both sentences is within maxLength
+    if ((hint + ' ' + secondSentence).length <= maxLength) {
+      hint += ' ' + secondSentence; // Include the second sentence fully
+    }
+  }
+
+  // If the first sentence alone exceeds the maxLength, truncate it
+  if (hint.length > maxLength) {
+    hint = hint.slice(0, maxLength).trim() + '...';
+  }
+
+  return hint;
 };
 
-function initializeKeyboard() {
+const removeTextBeforeColon = (text) => {
+  const parts = text.split(':');
+  if (parts.length > 1 && parts[1].trim().length > 0) {
+    if (text.length < 1) {
+      return text = "No hint available";
+    }
+    return parts.slice(1).join(':').trim();
+  }
+};
+
+const rand = (len) => {
+  const now = Date.now();
+  return Math.floor(now * Math.random()) % len;
+};
+
+const initializeKeyboard = () => {
   if (getbutton) {
     const letters = document.createElement("ul");
     letters.id = "alphabet";
@@ -229,6 +299,7 @@ const toggleAnimation = () => {
     click.play();
   }
 };
+
 const draw = () => {
   const ctx = hangmanCanvas.getContext("2d");
   ctx.clearRect(0, 0, hangmanCanvas.width, hangmanCanvas.height);

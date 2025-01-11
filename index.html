@@ -15,9 +15,18 @@
 </head>
 
 <body>
-  <button type="button" id="selector" class="playAgain selector" title="Start a new game">
-    Start Game
-  </button>
+  <div class="diff">
+    <button type="button" id="selector" class="playAgain selector" title="Start a new game">
+      Start Game
+    </button>
+    <h1 style="color: #fff;" class="hide" id="h1">Select Difficulty</h1>
+    <button type="button" data-mode="easy" id="easyBtn" class="playAgain selector ms hide" title="Start a new game">
+      Easy
+    </button>
+    <button type="button" id="hardBtn" data-mode="hard" class="playAgain selector ms hide" title="Start a new game">
+      Hard
+    </button>
+  </div>
   <div class="container" id="container">
     <button type="button" class="sound" id="stopSounds"><i class="fa-solid fa-volume-high -sound"></i></button>
     <button type="button" class="music" id="music"><i class="fa-solid fa-music -music"></i></button>
@@ -46,7 +55,7 @@
     <div class="popup-content">
       <h2>Hint</h2>
       <span id="close-hint" class="close" title="Close this hint popup">&times;</span>
-      <p id="output" title="Displays the hint for the current word"></p>
+      <p id="output" title="Displays the hint for the current word" class="output"></p>
     </div>
   </div>
   <!-- This is made by Samkit Jain -->

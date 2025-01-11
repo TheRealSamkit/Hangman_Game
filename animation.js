@@ -1,4 +1,4 @@
-export { con_animation, key_animation, music_animation, hang_animation, pop_up_animation, body_animation, bounce_effect, wrong_effect };
+export { con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect };
 
 const con_animation = () => {
     anime({
@@ -39,27 +39,6 @@ const pop_up_animation = () => {
         opacity: [0, 1],  // Fade in
         duration: 1000,
         easing: 'easeOutExpo'
-    });
-}
-
-const body_animation = () => {
-    anime({
-        targets: 'body',
-        backgroundColor: ['#1E1E1E', '#2C2C2C'],  // Subtle dark-to-dark color transition
-        easing: 'linear',
-        duration: 2000,  // Smooth color change over time
-        loop: true,  // Continuous loop
-    });
-
-}
-
-const music_animation = () => {
-    anime({
-        targets: '.music,.sound',
-        rotate: '1turn',  // Rotate once
-        duration: 2000,
-        easing: 'linear',
-        loop: true
     });
 }
 
