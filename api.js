@@ -4,14 +4,10 @@ const apiKey = 'MsdGU/2fCdNC+r6rIExaHQ==NLsJaoXtMqa2dmXm';
 const fetchRandomWord = async () => {
     try {
         const response = await fetch('https://api.api-ninjas.com/v1/randomword?type=noun', {
-            headers: {
-                'X-Api-Key': apiKey
-            }
+            headers: { 'X-Api-Key': apiKey }
         });
-        const data = await response.json();
-        const randomWord = data.word[0];
-        console.log("Random Word:", randomWord);
-        return randomWord; // Return the random word
+        const { word: [randomWord] } = await response.json();
+        return randomWord;
     } catch (error) {
         console.error('Error fetching random word:', error);
         throw error;
@@ -21,17 +17,10 @@ const fetchRandomWord = async () => {
 // Function to fetch a hint from Wikipedia
 const fetchWikipediaHint = async (word) => {
     try {
-        const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`;
-        const response = await fetch(url);
+        const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`);
         const data = await response.json();
-        console.log(data);
-        if (data.extract) {
-            console.log("Hint:", data.extract);
-            return data.extract; // Return the hint
-        } else {
-            console.log("No hint found on Wikipedia for:", word);
-            return null; // Return null if no hint is found
-        }
+        const hint = data.extract || "No hint found on Wikipedia for: " + word;
+        return data.extract ? hint : null;
     } catch (error) {
         console.error('Error fetching Wikipedia hint:', error);
         throw error;

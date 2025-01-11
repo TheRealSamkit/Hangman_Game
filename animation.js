@@ -1,5 +1,5 @@
-export { con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect };
-
+export { streakAnimation, spawnBloodSplatter, shakeContainer, con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect };
+const streak = document.querySelector('.streak-container');
 const con_animation = () => {
     anime({
         targets: '.container',
@@ -37,6 +37,7 @@ const pop_up_animation = () => {
         targets: '.popup-content',
         scale: [0.8, 1],  // Zoom in
         opacity: [0, 1],  // Fade in
+        translateY: [250, 0],  // Move from left to right
         duration: 1000,
         easing: 'easeOutExpo'
     });
@@ -63,4 +64,71 @@ const wrong_effect = () => {
         duration: 1000,
         delay: anime.stagger(100),
     })
+}
+
+function shakeContainer() {
+    anime({
+        targets: '.container',  // Replace with your container's selector
+        translateX: [
+            { value: -10, duration: 100 },
+            { value: 10, duration: 100 },
+            { value: -7, duration: 100 },
+            { value: 7, duration: 100 },
+            { value: 0, duration: 100 }
+        ],
+        easing: 'easeInOutQuad'
+    });
+}
+
+function spawnBloodSplatter() {
+    const container = document.querySelector('.container');
+    const splatter = document.createElement('div');
+    splatter.classList.add('blood-splatter');
+
+    // Random position inside the container
+    const containerRect = container.getBoundingClientRect();
+    const randomX = Math.random() * (containerRect.width - 20);  // Subtract splatter size
+    const randomY = Math.random() * (containerRect.height - 20);
+
+    splatter.style.left = `${randomX}px`;
+    splatter.style.top = `${randomY}px`;
+
+    const randomSize = Math.random() * 100 + 50;
+    splatter.style.width = `${randomSize}px`;
+    splatter.style.height = `${randomSize}px`;
+
+    container.appendChild(splatter);
+
+    // Animate the splatter
+    anime({
+        targets: splatter,
+        scale: [0, 1.5],
+        opacity: [0, 0.5],
+        rotate: Math.random() * 360,
+        easing: 'easeOutBounce',
+        duration: 800,
+        complete: function () {
+            // Optional: Fade out after a while
+            anime({
+                targets: splatter,
+                opacity: [.6, 0],
+                duration: 1500,
+                easing: 'easeInExpo',
+                delay: 4000 // Stay visible before fading
+            });
+        }
+    });
+}
+
+function streakAnimation() {
+    streak.classList.remove("hide");
+    anime({
+        targets: '.streak-container',
+        translateX: [300, -300],
+        duration: 4000,
+        easing: 'easeOutExpo',
+        complete: function () {
+            streak.classList.add("hide");
+        }
+    });
 }

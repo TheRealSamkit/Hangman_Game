@@ -4,7 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hangman Game</title>
+  <title>Hangman Game - Classic Word Guessing Fun</title>
+  <meta name="description"
+    content="Play the classic Hangman game online. Test your vocabulary and guessing skills in this fun and challenging word game!" />
+  <meta name="keywords" content="Hangman game, online word game, vocabulary game, word guessing game, fun games" />
+  <meta name="author" content="Samkit Jain" />
   <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon">
   <link rel="stylesheet" href="hang.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
@@ -16,54 +20,69 @@
 
 <body>
   <div class="diff">
-    <button type="button" id="selector" class="playAgain selector" title="Start a new game">
+    <button type="button" id="selector" class="playAgain selector" title="Start a new Hangman game">
       Start Game
     </button>
     <h1 style="color: #fff;" class="hide" id="h1">Select Difficulty</h1>
-    <button type="button" data-mode="easy" id="easyBtn" class="playAgain selector ms hide" title="Start a new game">
+    <button type="button" data-mode="easy" id="easyBtn" class="playAgain selector ms hide"
+      title="Choose easy difficulty">
       Easy
     </button>
-    <button type="button" id="hardBtn" data-mode="hard" class="playAgain selector ms hide" title="Start a new game">
+    <button type="button" id="hardBtn" data-mode="hard" class="playAgain selector ms hide"
+      title="Choose hard difficulty">
       Hard
     </button>
   </div>
   <div class="container" id="container">
-    <button type="button" class="sound" id="stopSounds"><i class="fa-solid fa-volume-high -sound"></i></button>
-    <button type="button" class="music" id="music"><i class="fa-solid fa-music -music"></i></button>
+    <button type="button" class="sound" id="stopSounds" title="Toggle sound"><i
+        class="fa-solid fa-volume-high -sound"></i></button>
+    <button type="button" class="music" id="music" title="Toggle music"><i
+        class="fa-solid fa-music -music"></i></button>
     <h1 style="margin-bottom: 10px; color: #fff">Hangman Game!</h1>
     <div class="flex">
-      <div>
-        <canvas id="hangMan" class="hang" title="Canvas for drawing the hangman"></canvas>
+      <div class="hangman">
+        <canvas id="hangMan" class="hang" title="Visual representation of the Hangman game"></canvas>
+        <p title="Displays the current score" class="txt Score">Score : <span id="score">0</span></p>
+        <p title="Displays the remaining guesses" class="txt remGue">Remaining guesses : <span
+            id="remainingGuesses">8</span></p>
       </div>
       <div class="game">
-        <div class="word" id="blank" title="Displays the current word with blanks for guessed letters"></div>
-        <div class="keyboard" id="keyboard" title=""></div>
+        <div class="word" id="blank" title="Displays the current word with blanks for unguessed letters"></div>
+        <div class="keyboard" id="keyboard" title="Interactive keyboard for letter selection"></div>
       </div>
     </div>
-    <p id="message" title="Displays game messages such as win/lose status"></p>
+    <p id="message" title="Game status messages (win/lose or other notifications)"></p>
     <div class="btnhold">
-      <button id="playAgain" class="playAgain btn1" title="Restart the game">Play Again!</button>
+      <button id="playAgain" class="playAgain btn1" title="Restart the Hangman game">Play Again!</button>
       <button type="button" class="btn1 playAgain" id="hint-btn" title="Get a hint for the current word">Get Hint <i
           class="fa-regular fa-lightbulb"></i></button>
     </div>
-    <a href="https://github.com/TheRealSamkit/HangMan_Game" class="love" title="View the source code on GitHub"
-      target="_blank">Made
-      with
-      💖 by Samkit Jain</a>
+    <a href="https://github.com/TheRealSamkit/HangMan_Game" class="love"
+      title="View the Hangman game source code on GitHub" target="_blank">
+      Made with 💖 by Samkit Jain
+    </a>
+
+    <div class="streak-container hide">
+      <p class="streakText">Guess Streak</p>
+      <div class="streak">
+        🔥<p class="count">0</p>
+      </div>
+    </div>
   </div>
   <div class="pop-up" id="popup">
     <div class="popup-content">
-      <h2>Hint</h2>
-      <span id="close-hint" class="close" title="Close this hint popup">&times;</span>
+      <h2 title="Hint popup header">Hint</h2>
+      <span id="close-hint" class="close" title="Close the hint popup">&times;</span>
       <p id="output" title="Displays the hint for the current word" class="output"></p>
     </div>
   </div>
+
   <div id="overlay">
-    <div class="loader">
-    </div><br>
-    <h4 style="color:#fff"> Fetching hardest word from the web...</h4>
+    <div class="loader" title="Loading animation for fetching the word"></div><br>
+    <h4 style="color:#fff">Fetching hardest word from the web...</h4>
   </div>
 
+  <div class="blood-splatter"></div>
   <!-- This is made by Samkit Jain -->
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>

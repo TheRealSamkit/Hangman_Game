@@ -33,6 +33,50 @@ body {
     animation: floatAndColorChange 6s ease-in-out infinite;
 }
 
+.streak{
+    font-size: 5rem; 
+    position: relative;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+.streakText{
+    font-size: 1.6rem;
+    color:crimson;
+    padding: .2em;
+    border-radius: 5px;
+    background-color: var(--secondary-bg);
+}
+.count{
+    color: #000;
+    font-size: .7em;
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.txt{
+    position: absolute;
+    color: var(--text-color);
+    font-size: .8em;
+    font-weight: 500;
+    margin: .5em;
+}
+
+.hangman{
+    position: relative;
+}
+
+.remGue{
+    right:.2em;
+}
+
+.streak-container{
+    position: absolute;
+}
+
 .selector {
     display: block;
 }
@@ -385,6 +429,19 @@ h2 {
     left: 46px;
   }
   
+  .blood-splatter {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background-image: url('assets/blood.png'); /* Replace with your image */
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0;
+    pointer-events: none;
+    filter: contrast(90%);
+    transform: scale(0);
+  }
+
   @keyframes animloader {
     0% {
       transform: translate(-10px, -10px);

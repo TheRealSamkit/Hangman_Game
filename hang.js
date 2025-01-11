@@ -1,21 +1,24 @@
 import { categories, audioList } from "./constant.js";
-import { con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect } from "./animation.js";
+import { streakAnimation, spawnBloodSplatter, shakeContainer, con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect } from "./animation.js";
 import { fetchRandomWordAndHint } from "./api.js";
 
 let getbutton = true, music = false, sound = false, currentCategory = {};
-let randWord = "", previousGuess = "", hint = "", difficulty = "";
-let correctGuesses = 0, falseGuess = 0, pickedWord = [];
+let randWord = "", previousGuess = "", hint = "", difficulty = "", unFilteredHint = "";
+let correctGuesses = 0, falseGuess = 8, myScore = 0, guessStreak = 0, pickedWord = [];
 let category = ["animals", "birds", "indian", "fruits", "vegetables"];
 let { click, start, bg, shabash, wrong, over, correct } = audioList;
 const alphabets = "abcdefghijklmnopqrstuvwxyz".split("");
 
 const elements = {
   overlay: document.getElementById('overlay'),
+  pcount: document.querySelector('.count'),
   selector: document.getElementById("selector"),
   container: document.getElementById("container"),
   keyboard: document.getElementById("keyboard"),
   blank: document.getElementById("blank"),
   message: document.getElementById("message"),
+  score: document.getElementById("score"),
+  countBox: document.getElementById("remainingGuesses"),
   popup: document.getElementById("popup"),
   output: document.getElementById("output"),
   hangmanCanvas: document.getElementById("hangMan"),
@@ -83,6 +86,7 @@ async function pickWord() {
   } else {
     await fetchWordFromAPI();
   }
+  unFilteredHint = hint;
   processHint();
   displayWord();
 }
@@ -109,6 +113,9 @@ function processHint() {
   }
   if (hint.includes(':')) {
     hint = hint.split(':').slice(1).join(':').trim() || "No hint available";
+  }
+  if (hint.trim() === '.') {
+    hint = "No hint found :( Try another word by clicking play again!";
   }
 }
 
@@ -158,12 +165,22 @@ function processWrongGuess(element, guess) {
   <line x1="6" y1="6" x2="18" y2="18"/>
 </svg>`;
   playSound(wrong, 2);
-  falseGuess += 1;
+  falseGuess -= 1;
+  shakeContainer();
   hang_animation();
   wrong_effect();
   wrong.play();
   drawHangman();
   setTimeout(() => element.classList.remove("wrong"), 1000);
+}
+
+function displayScore() {
+  if (guessStreak >= 3) {
+    myScore += (guessStreak * 50);
+    elements.pcount.innerHTML = guessStreak;
+    streakAnimation();
+  }
+  elements.score.innerHTML = myScore;
 }
 
 function endGame(won) {
@@ -172,9 +189,12 @@ function endGame(won) {
   if (won) {
     confettiAnimation();
     shabash.play();
+    myScore += 200;
   } else {
     playSound(over, 1);
+    myScore -= 100;
   }
+  displayScore();
 }
 
 function toggleHint(show) {
@@ -183,6 +203,8 @@ function toggleHint(show) {
     elements.output.innerText = hint;
     playSound(click, 0.153);
     pop_up_animation();
+    myScore = (myScore === 0 ? myScore = 0 : myScore -= 10);
+    displayScore();
   }
 }
 
@@ -225,43 +247,73 @@ function drawHangman() {
   ctx.clearRect(0, 0, elements.hangmanCanvas.width, elements.hangmanCanvas.height);
   ctx.lineWidth = 2;
   ctx.strokeStyle = "white";
+  elements.countBox.innerHTML = falseGuess;
+  myScore = (myScore === 0 ? myScore = 0 : myScore -= 50);
+  guessStreak = 0;
+  displayScore();
 
-  if (falseGuess > 0) drawLine(15, 140, 150, 140);
-  if (falseGuess > 1) {
-    drawLine(20, 20, 20, 140);
-    drawLine(20, 50, 50, 30);
+  if (falseGuess < 8) {
+    ctx.moveTo(15, 140);
+    ctx.lineTo(150, 140);
+    ctx.stroke();
+    ctx.clearRect(0, 0, 150, 138);
   }
-  if (falseGuess > 2) drawLine(10, 30, 100, 30);
-  if (falseGuess > 3) {
+  if (falseGuess < 7) {
+    ctx.moveTo(20, 20);
+    ctx.lineTo(20, 140);
+    ctx.moveTo(20, 50);
+    ctx.lineTo(50, 30);
+    ctx.stroke();
+    ctx.clearRect(60, 40, 110, 90);
+  }
+  if (falseGuess < 6) {
+    ctx.moveTo(10, 30);
+    ctx.lineTo(100, 30);
+    ctx.stroke();
+    ctx.clearRect(60, 40, 110, 90);
+  }
+  if (falseGuess < 5) {
     ctx.beginPath();
     ctx.arc(90, 30, 2, 0, 2 * Math.PI);
+    ctx.moveTo(90, 30);
+    ctx.lineTo(90, 70);
     ctx.stroke();
-    drawLine(90, 30, 90, 70);
+    ctx.clearRect(60, 69, 90, 70.03);
   }
-  if (falseGuess > 4) drawCircle(90, 77, 7);
-  if (falseGuess > 5) drawLine(90, 83, 90, 110);
-  if (falseGuess > 6) {
-    drawLine(90, 87, 80, 105);
-    drawLine(90, 87, 100, 105);
-  }
-  if (falseGuess > 7) {
-    drawLine(90, 110, 80, 125);
-    drawLine(90, 110, 100, 125);
-  }
-  if (falseGuess >= 8) endGame(false);
-}
+  if (falseGuess < 4) {
+    ctx.clearRect(60, 69, 90, 70.03);
+    ctx.beginPath();
+    ctx.arc(90, 77, 7, 0, 2 * Math.PI);
+    ctx.stroke();
 
-function drawLine(x1, y1, x2, y2) {
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-}
+    for (let i = 0; i < falseGuess * 2; i++) {
+      spawnBloodSplatter();
+    }
+  }
+  if (falseGuess < 3) {
+    ctx.moveTo(90, 83);
+    ctx.lineTo(90, 110);
+    ctx.stroke();
+  }
+  if (falseGuess < 2) {
+    ctx.moveTo(90, 87);
+    ctx.lineTo(80, 105);
+    ctx.moveTo(90, 87);
+    ctx.lineTo(100, 105);
+    ctx.stroke();
+  }
+  if (falseGuess < 1) {
+    ctx.moveTo(90, 110);
+    ctx.lineTo(80, 125);
+    ctx.moveTo(90, 110);
+    ctx.lineTo(100, 125);
+    ctx.stroke();
+  }
 
-function drawCircle(x, y, radius) {
-  ctx.beginPath();
-  ctx.arc(x, y, radius, 0, 2 * Math.PI);
-  ctx.stroke();
-}
+  if (falseGuess <= 0) {
+    endGame(false);
+  }
+};
 
 function playSound(audio, currentTime = 0) {
   audio.currentTime = currentTime;
@@ -274,6 +326,9 @@ function updateCorrectGuess(char, i, element) {
     <path d="M20 6L9 17l-5-5"/>
   </svg>`;
   correctGuesses += 1;
+  guessStreak += 1;
+  myScore += 100;
+  displayScore();
   playSound(correct, 0.155);
 }
 
@@ -305,12 +360,12 @@ function confettiAnimation() {
     const timeLeft = animationEnd - Date.now();
     if (timeLeft <= 0) return clearInterval(interval);
     const particleCount = 50 * (timeLeft / duration);
-    createConfetti(particleCount, 0.2);
-    createConfetti(particleCount, 0.8);
+    createConfetti(particleCount, 0.2, defaults);
+    createConfetti(particleCount, 0.8, defaults);
   }, 250);
 }
 
-function createConfetti(particleCount, x) {
+function createConfetti(particleCount, x, defaults = {}) {
   confetti({
     ...defaults,
     particleCount,
@@ -346,12 +401,15 @@ function rand(len) {
 
 function resetGame() {
   ctx.clearRect(0, 0, elements.hangmanCanvas.width, elements.hangmanCanvas.height);
-  correctGuesses = falseGuess = 0;
+  correctGuesses = 0, falseGuess = 8, guessStreak = 0;
+  myScore += 1;
   previousGuess = "";
   elements.message.innerHTML = "";
   getbutton = true;
   elements.keyboard.innerHTML = "";
+  elements.countBox.innerHTML = falseGuess;
   pickWord();
   initializeKeyboard();
+  displayScore();
   playSound(click, 0.153);
 }
