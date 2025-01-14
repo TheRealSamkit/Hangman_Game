@@ -3,7 +3,7 @@ import { streakAnimation, spawnBloodSplatter, shakeContainer, con_animation, key
 import { fetchRandomWordAndHint } from "./api.js";
 
 let getbutton = true, music = false, sound = false, currentCategory = {};
-let randWord = "", previousGuess = "", hint = "", difficulty = "", unFilteredHint = "";
+let randWord = "", previousGuess = "", hint = "", difficulty = "", unFilteredHint = "",lastChar="";
 let correctGuesses = 0, falseGuess = 8, myScore = 0, guessStreak = 0, pickedWord = [];
 let category = ["animals", "birds", "indian", "fruits", "vegetables"];
 let { click, start, bg, shabash, wrong, over, correct } = audioList;
@@ -47,7 +47,7 @@ function init() {
 
 function startScreen() {
   elements.selector.style.display = "none";
-  document.querySelector("h1").classList.remove("hide");
+  document.querySelector("#h1").classList.remove("hide");
   elements.diffButtons.forEach(button => button.classList.remove("hide"));
   playSound(start, 0.8);
   bg.play();
@@ -174,8 +174,8 @@ function processWrongGuess(element, guess) {
   setTimeout(() => element.classList.remove("wrong"), 1000);
 }
 
-function displayScore() {
-  if (guessStreak >= 3) {
+function displayScore(disScore) {
+  if (guessStreak >= 3 && disScore) {
     myScore += (guessStreak * 50);
     elements.pcount.innerHTML = guessStreak;
     streakAnimation();
@@ -194,7 +194,7 @@ function endGame(won) {
     playSound(over, 1);
     myScore -= 100;
   }
-  displayScore();
+  displayScore(false);
 }
 
 function toggleHint(show) {
@@ -204,7 +204,7 @@ function toggleHint(show) {
     playSound(click, 0.153);
     pop_up_animation();
     myScore = (myScore === 0 ? myScore = 0 : myScore -= 10);
-    displayScore();
+    displayScore(false);
   }
 }
 
@@ -250,7 +250,7 @@ function drawHangman() {
   elements.countBox.innerHTML = falseGuess;
   myScore = (myScore === 0 ? myScore = 0 : myScore -= 50);
   guessStreak = 0;
-  displayScore();
+  displayScore(false);
 
   if (falseGuess < 8) {
     ctx.moveTo(15, 140);
@@ -326,10 +326,12 @@ function updateCorrectGuess(char, i, element) {
     <path d="M20 6L9 17l-5-5"/>
   </svg>`;
   correctGuesses += 1;
+  if (lastChar === char) return;
   guessStreak += 1;
   myScore += 100;
-  displayScore();
+  displayScore(true);
   playSound(correct, 0.155);
+  lastChar=char;
 }
 
 function initializeKeyboard() {
@@ -410,6 +412,6 @@ function resetGame() {
   elements.countBox.innerHTML = falseGuess;
   pickWord();
   initializeKeyboard();
-  displayScore();
+  displayScore(true);
   playSound(click, 0.153);
 }

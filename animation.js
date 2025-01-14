@@ -1,5 +1,8 @@
 export { streakAnimation, spawnBloodSplatter, shakeContainer, con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect };
 const streak = document.querySelector('.streak-container');
+const selector = document.querySelector('#selector');
+const logo = document.querySelector('.logo');
+logoAnimation();
 const con_animation = () => {
     anime({
         targets: '.container',
@@ -131,4 +134,46 @@ function streakAnimation() {
             streak.classList.add("hide");
         }
     });
+    
+}function logoAnimation() {
+    anime.timeline()
+        .add({
+            targets: '.logo',
+            scale: [0, 1.5],
+            opacity: [0, 1],
+            duration: 500,
+            easing: 'easeOutBounce'
+        })
+        .add({
+            targets: '.logo',
+            scale: [1.5, 1],
+            duration: 500,
+            easing: 'easeOutElastic(1, .8)'
+        })
+        .add({
+            targets: '.logo',
+            scaleX: [1, 1.2],
+            scaleY: [1, 0.8],
+            duration: 300,
+            easing: 'easeInOutQuad'
+        })
+        .add({
+            targets: '.logo',
+            scaleX: [1.2, 1],
+            scaleY: [0.8, 1],
+            duration: 300,
+            easing: 'easeInOutQuad'
+        })
+        .add({
+            targets: '.logo',
+            opacity: [1, 0],
+            duration: 500,
+            easing: 'easeInOutQuad',
+            complete: function () {
+                selector.classList.remove('hide');
+                logo.classList.add('hide');
+            }
+        });
 }
+
+logoAnimation();
