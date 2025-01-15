@@ -48,6 +48,14 @@ function init() {
   setupSounds();
 }
 
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+      bg.pause();
+  } else {
+    bg.play();
+  }
+});
+
 function startScreen() {
   elements.selector.style.display = "none";
   document.querySelector("#h1").classList.remove("hide");
@@ -374,12 +382,28 @@ function confettiAnimation() {
   const animationEnd = Date.now() + duration;
   const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
+  function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function createConfetti(particleCount, originX) {
+    confetti(Object.assign({}, defaults, {
+      particleCount,
+      origin: { x: originX, y: Math.random() - 0.2 },
+    }));
+  }
+
   const interval = setInterval(() => {
     const timeLeft = animationEnd - Date.now();
     if (timeLeft <= 0) return clearInterval(interval);
+
     const particleCount = 50 * (timeLeft / duration);
-    createConfetti(particleCount, 0.2, defaults);
-    createConfetti(particleCount, 0.8, defaults);
+
+    createConfetti(particleCount, randomInRange(0.1, 0.3));
+
+    createConfetti(particleCount, randomInRange(0.7, 0.9));
+
+    createConfetti(particleCount, randomInRange(0.4, 0.6));
   }, 250);
 }
 
@@ -428,6 +452,6 @@ function resetGame() {
   elements.countBox.innerHTML = falseGuess;
   pickWord();
   initializeKeyboard();
-  displayScore(true);
+  displayScore(false);
   playSound(click, 0.153);
 }
