@@ -4,23 +4,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hangman Game - Classic Word Guessing Fun</title>
-  <meta name="description"
-    content="Play the classic Hangman game online. Test your vocabulary and guessing skills in this fun and challenging word game!" />
-  <meta name="keywords" content="Hangman game, online word game, vocabulary game, word guessing game, fun games" />
+  <title>Play Hangman Game Online | Classic Word Guessing Fun</title>
+  <meta name="description" content="Play the classic Hangman game online for free! Test your vocabulary and guessing skills in this fun and challenging word game. Start playing now!" />
+  <meta name="keywords" content="Hangman game online, free word game, vocabulary game, word guessing game, play Hangman, classic games online" />
   <meta name="author" content="Samkit Jain" />
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Play Hangman Game Online | Classic Word Guessing Fun" />
+  <meta property="og:description" content="Enjoy the classic Hangman game online. Test your word knowledge and guessing skills. Start playing for free!" />
+  <meta property="og:image" content="https://your-github-page-url/assets/favicon.png" />
+  <meta property="og:url" content="https://your-github-username.github.io/HangMan_Game/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Play Hangman Game Online | Classic Word Guessing Fun" />
+  <meta name="twitter:description" content="Challenge yourself with the classic Hangman word guessing game. Play now for free!" />
+  <meta name="twitter:image" content="https://your-github-page-url/assets/favicon.png" />
+
   <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon">
   <link rel="stylesheet" href="hang.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@300;400;700&display=swap" rel="stylesheet" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Game",
+    "name": "Hangman Game Online",
+    "description": "Play the classic Hangman game online and test your vocabulary skills.",
+    "author": {
+      "@type": "Person",
+      "name": "Samkit Jain"
+    },
+    "image": "https://github.com/TheRealSamkit/HangMan_Game/assets/favicon.png",
+    "url": "https://TheRealSamkit.github.io/HangMan_Game/",
+    "publisher": {
+      "@type": "Organization",
+      "name": "GitHub Pages"
+    }
+  }
+  </script>
 </head>
 
 <body>
   <main class="main">
-    <h1 class="title">Hangman Game!</h1>
+    <h1 class="title">Hangman Game! <i class="fa-solid fa-gear gear"></i></h1>
+    <div class="settings">
+      <i class="fa-solid fa-volume-high -sound" id="stopSounds" title="Toggle sound"></i>
+      <i class="fa-solid fa-music -music" id="music" title="Toggle music"></i>
+    </div>
     <img src="assets/favicon.png" alt="Hangman Game Logo" class="logo" title="Hangman Game Logo" /> 
     <div class="diff">
       <button type="button" id="selector" class="playAgain selector hide" title="Start a new Hangman game">
@@ -37,10 +73,6 @@
       </button>
     </div>
     <div class="container" id="container">
-      <button type="button" class="sound" id="stopSounds" title="Toggle sound"><i
-          class="fa-solid fa-volume-high -sound"></i></button>
-      <button type="button" class="music" id="music" title="Toggle music"><i
-          class="fa-solid fa-music -music"></i></button>
       <div class="flex">
         <div class="hangman">
           <canvas id="hangMan" class="hang" title="Visual representation of the Hangman game"></canvas>

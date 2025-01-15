@@ -60,6 +60,7 @@ body {
     background-color: var(--primary-bg);
     padding: .5em;
     border-radius: 20px;
+    z-index: 5;
 }
 
 .streak{
@@ -141,62 +142,53 @@ body {
     }
 }
 
-.music {
+.settings{
     position: absolute;
-    right: 10px;
-    top: 10px;
-    background-color: transparent;
-    border: 3px solid #fff;
-    border-radius: 50%;
+    height: 10rem;
+    width:2rem;
+    top: 3rem;
+    right:4px;
+    z-index: 1;
+    padding: 1em;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
     font-size: 1.5rem;
-    color: var(--text-color);
-    outline: none;
-    animation: rotate 2s linear infinite;
-}
-
-.sound {
-    position: absolute;
-    left: 10px;
-    top: 10px;
-    background-color: transparent;
-    border: 3px solid #fff;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    color: var(--text-color);
-    outline: none;
+    color:var(--text-color);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: darkslategrey;
+    box-shadow: 0 0 20px var(--primary-bg);
 }
 
 .-sound {
-    position: relative;
     padding: .5rem;
 }
 
 .-music {
-    position: relative;
     padding: .5rem;
 }
 
 .-music2::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
+    top: 63%;
+    right:2px;
+    width: 85%;
     height: 1.5px;
+    font-weight: 900;
     background-color: var(--text-color);
     transform: rotate(-45deg);
 }
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
+.gear {
+    position: absolute;
+    top:.7em;
+    right: 10px;
+    background-color: transparent;
+    color: var(--text-color);
+    outline: none;
 }
-
 .hang {
     height: auto;
     width: 30vw;

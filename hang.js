@@ -1,8 +1,8 @@
 import { categories, audioList } from "./constant.js";
-import { streakAnimation, spawnBloodSplatter, shakeContainer, con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect } from "./animation.js";
+import { setttingAni,streakAnimation, spawnBloodSplatter, shakeContainer, con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect } from "./animation.js";
 import { fetchRandomWordAndHint } from "./api.js";
 
-let getbutton = true, music = false, sound = false, currentCategory = {};
+let getbutton = true, music = false, sound = false,setShow=true,currentCategory = {};
 let randWord = "", previousGuess = "", hint = "", difficulty = "", unFilteredHint = "",lastChar="";
 let correctGuesses = 0, falseGuess = 8, myScore = 0, guessStreak = 0, pickedWord = [];
 let category = ["animals", "birds", "indian", "fruits", "vegetables"];
@@ -24,6 +24,8 @@ const elements = {
   hangmanCanvas: document.getElementById("hangMan"),
   playAgain: document.getElementById("playAgain"),
   music: document.getElementById("music"),
+  settingBtn: document.querySelector(".gear"),
+  settingCon: document.querySelector(".settings"),
   hintButton: document.getElementById("hint-btn"),
   closeHintButton: document.getElementById("close-hint"),
   stopSoundsButton: document.getElementById("stopSounds"),
@@ -41,6 +43,7 @@ function init() {
   elements.playAgain.addEventListener("click", resetGame);
   elements.music.addEventListener("click", toggleMusic);
   elements.stopSoundsButton.addEventListener("click", toggleSounds);
+  elements.settingBtn.addEventListener("click", ()=>toggleSettings());
   elements.diffButtons.forEach(button => button.addEventListener("click", (e) => startGame(e.target.dataset.mode)));
   setupSounds();
 }
@@ -197,6 +200,17 @@ function endGame(won) {
   displayScore(false);
 }
 
+function toggleSettings() {
+  playSound(click, 0.153);
+  if (setShow) {
+    elements.settingCon.style.display = "flex";
+  } else {
+    setTimeout(() => { elements.settingCon.style.display = "none"; }, 2000);
+  }
+  setttingAni();
+  setShow=!setShow;
+}
+
 function toggleHint(show) {
   elements.popup.style.display = show ? "flex" : "none";
   if (show) {
@@ -225,10 +239,12 @@ function toggleSounds() {
   sound = !sound;
   if (sound) {
     setupSounds();
-    elements.stopSoundsButton.innerHTML = '<i class="fa-solid fa-volume-high -sound"></i>';
+    elements.stopSoundsButton.classList.remove("fa-volume-xmark");
+    elements.stopSoundsButton.classList.add("fa-volume-high");
   } else {
     muteAllSounds();
-    elements.stopSoundsButton.innerHTML = '<i class="fa-solid fa-volume-xmark -sound"></i>';
+    elements.stopSoundsButton.classList.add("fa-volume-xmark");
+    elements.stopSoundsButton.classList.remove("fa-volume-high");
   }
   playSound(click, 0.153);
 }
@@ -286,7 +302,7 @@ function drawHangman() {
     ctx.arc(90, 77, 7, 0, 2 * Math.PI);
     ctx.stroke();
 
-    for (let i = 0; i < falseGuess * 2; i++) {
+    for (let i = 0; i < (falseGuess+1) * 2; i++) {
       spawnBloodSplatter();
     }
   }
@@ -403,7 +419,7 @@ function rand(len) {
 
 function resetGame() {
   ctx.clearRect(0, 0, elements.hangmanCanvas.width, elements.hangmanCanvas.height);
-  correctGuesses = 0, falseGuess = 8, guessStreak = 0;
+  correctGuesses = 0, falseGuess = 8;
   myScore += 1;
   previousGuess = "";
   elements.message.innerHTML = "";

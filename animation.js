@@ -1,7 +1,10 @@
-export { streakAnimation, spawnBloodSplatter, shakeContainer, con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect };
+export { streakAnimation,setttingAni, spawnBloodSplatter, shakeContainer, con_animation, key_animation, hang_animation, pop_up_animation, bounce_effect, wrong_effect };
+
 const streak = document.querySelector('.streak-container');
 const selector = document.querySelector('#selector');
 const logo = document.querySelector('.logo');
+let isReversed = false;
+
 logoAnimation();
 const con_animation = () => {
     anime({
@@ -88,6 +91,7 @@ function spawnBloodSplatter() {
     const splatter = document.createElement('div');
     splatter.classList.add('blood-splatter');
 
+
     // Random position inside the container
     const containerRect = container.getBoundingClientRect();
     const randomX = Math.random() * (containerRect.width - 20);  // Subtract splatter size
@@ -101,8 +105,6 @@ function spawnBloodSplatter() {
     splatter.style.height = `${randomSize}px`;
 
     container.appendChild(splatter);
-
-    // Animate the splatter
     anime({
         targets: splatter,
         scale: [0, 1.5],
@@ -111,13 +113,15 @@ function spawnBloodSplatter() {
         easing: 'easeOutBounce',
         duration: 800,
         complete: function () {
-            // Optional: Fade out after a while
             anime({
                 targets: splatter,
                 opacity: [.6, 0],
                 duration: 1500,
                 easing: 'easeInExpo',
-                delay: 4000 // Stay visible before fading
+                delay: 4000,
+                complete: function () {
+                    splatter.remove();
+                }   
             });
         }
     });
@@ -135,7 +139,9 @@ function streakAnimation() {
         }
     });
     
-}function logoAnimation() {
+}
+
+function logoAnimation() {
     anime.timeline()
         .add({
             targets: '.logo',
@@ -176,4 +182,19 @@ function streakAnimation() {
         });
 }
 
+function setttingAni() {
+    anime({
+        targets: '.settings',
+        translateY: isReversed ? [10, -200] : [-100, 10],
+        duration: 2000,
+        easing: 'easeOutBounce',
+    });
+    anime({
+        targets: '.gear',
+        rotate: isReversed ? '-90deg' : '90deg',
+        duration: 2000,
+        easing: 'easeOutBounce',
+    });
+    isReversed = !isReversed;
+}
 logoAnimation();
