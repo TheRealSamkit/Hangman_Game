@@ -88,12 +88,18 @@ async function pickWord() {
     const idx = rand(currentCategory.words.length);
     randWord = currentCategory.words[idx];
     hint = currentCategory.hints[idx];
-    if (pickedWord.includes(randWord)) return pickWord();
-    if (pickedWord.length === 85) pickedWord = [];
-    pickedWord.unshift(randWord);
+    if (pickedWord.includes(randWord)){ 
+      if (pickedWord.length >= 85) {
+        difficulty = "hard" ;
+        return pickWord();
+      } else {
+        return pickWord();
+      }
+    }
   } else {
     await fetchWordFromAPI();
   }
+  pickedWord.unshift(randWord);
   unFilteredHint.unshift(hint);
   processHint();
   displayWord();
@@ -222,7 +228,7 @@ function toggleHint(show) {
   playSound(click, 0.153);
   if (show) {
     elements.output.innerHTML = hint;
-    elements.synDisplay.innerText = `Synonyms : ${synonym}`;
+    difficulty==="hard"?elements.synDisplay.innerText = `Synonyms : ${synonym}`:elements.synDisplay.style.display="none";
     pop_up_animation();
     myScore = (myScore === 0 ? myScore = 0 : myScore -= 10);
     displayScore(false);

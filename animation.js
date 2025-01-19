@@ -9,8 +9,8 @@ logoAnimation();
 const con_animation = () => {
     anime({
         targets: '.container',
-        translateX: [-500, 0], // Move the container from left to right
-        opacity: [0, 1],       // Fade in
+        translateX: [-500, 0], 
+        opacity: [0, 1],       
         duration: 1500,
         easing: 'easeOutExpo'
     });
@@ -19,18 +19,18 @@ const con_animation = () => {
 const key_animation = () => {
     anime({
         targets: '.letter',
-        scale: [0, 1],  // Start from scale 0, expand to 1
-        opacity: [0, 1],  // Fade in from 0 to 1
+        scale: [0, 1], 
+        opacity: [0, 1], 
         duration: 500,
         easing: 'easeOutExpo',
-        delay: anime.stagger(20)  // Delay the start of each letter animation
+        delay: anime.stagger(20)  
     });
 }
 
 const hang_animation = () => {
     anime({
         targets: '.hang',
-        scaleY: [0.8, 1], // scales from 0 to 1 in Y direction
+        scaleY: [0.8, 1],
         opacity: [0, 1],
         easing: 'easeOutBounce',
         duration: 1000
@@ -41,9 +41,9 @@ const hang_animation = () => {
 const pop_up_animation = () => {
     anime({
         targets: '.popup-content',
-        scale: [0.8, 1],  // Zoom in
-        opacity: [0, 1],  // Fade in
-        translateY: [250, 0],  // Move from left to right
+        scale: [0.8, 1],  
+        opacity: [0, 1], 
+        translateY: [250, 0], 
         duration: 1000,
         easing: 'easeOutExpo'
     });
@@ -52,11 +52,11 @@ const pop_up_animation = () => {
 const bounce_effect = () => {
     anime({
         targets: '.playAgain',
-        scale: [0.3, 1], // Starts small, grows to normal size
-        opacity: [0, 1], // Starts invisible, becomes visible
-        duration: 1000, // Animation duration
-        easing: 'easeOutBounce', // Bounce easing
-        delay: 200, // Delay before starting the animation
+        scale: [0.3, 1], 
+        opacity: [0, 1], 
+        duration: 1000,
+        easing: 'easeOutBounce', 
+        delay: 200, 
     });
 }
 
@@ -74,7 +74,7 @@ const wrong_effect = () => {
 
 function shakeContainer() {
     anime({
-        targets: '.container',  // Replace with your container's selector
+        targets: '.container',  
         translateX: [
             { value: -10, duration: 100 },
             { value: 10, duration: 100 },
@@ -91,8 +91,6 @@ function spawnBloodSplatter() {
     const splatter = document.createElement('div');
     splatter.classList.add('blood-splatter');
 
-
-    // Random position inside the container
     const containerRect = container.getBoundingClientRect();
     const randomX = Math.random() * (containerRect.width - 20);  // Subtract splatter size
     const randomY = Math.random() * (containerRect.height - 20);

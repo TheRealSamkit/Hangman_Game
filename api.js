@@ -69,7 +69,7 @@ const fetchSynonyms = async (word) => {
         return synonyms;
     } catch (error) {
         console.error('Error fetching synonyms:', error);
-        return 'Error fetching synonyms.';
+        return 'No synonyms found.';
     }
 };
 

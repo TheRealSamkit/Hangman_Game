@@ -59,7 +59,8 @@ body {
     text-align: center;
     background-color: var(--primary-bg);
     padding: .5em;
-    border-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
     z-index: 5;
 }
 
