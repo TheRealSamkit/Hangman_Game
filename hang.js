@@ -3,8 +3,8 @@ import { setttingAni,streakAnimation, spawnBloodSplatter, shakeContainer, con_an
 import { fetchRandomWordAndHint } from "./api.js";
 
 let getbutton = true, music = false, sound = false,setShow=true,currentCategory = {};
-let randWord = "", previousGuess = "", hint = "", difficulty = "", unFilteredHint = "",lastChar="";
-let correctGuesses = 0, falseGuess = 8, myScore = 0, guessStreak = 0, pickedWord = [];
+let randWord = "", previousGuess = "", hint = "", difficulty = "",lastChar="",synonym="";
+let correctGuesses = 0, falseGuess = 8, myScore = 0, guessStreak = 0, pickedWord = [],unFilteredHint = [];
 let category = ["animals", "birds", "indian", "fruits", "vegetables"];
 let { click, start, bg, shabash, wrong, over, correct } = audioList;
 const alphabets = "abcdefghijklmnopqrstuvwxyz".split("");
@@ -21,6 +21,7 @@ const elements = {
   countBox: document.getElementById("remainingGuesses"),
   popup: document.getElementById("popup"),
   output: document.getElementById("output"),
+  synDisplay: document.getElementById("synonymDis"),
   hangmanCanvas: document.getElementById("hangMan"),
   playAgain: document.getElementById("playAgain"),
   music: document.getElementById("music"),
@@ -49,11 +50,7 @@ function init() {
 }
 
 document.addEventListener('visibilitychange', function() {
-  if (document.hidden) {
-      bg.pause();
-  } else {
-    bg.play();
-  }
+  document.hidden ? bg.pause() : bg.play();
 });
 
 function startScreen() {
@@ -65,7 +62,7 @@ function startScreen() {
 }
 
 function setupSounds() {
-  start.volume = bg.volume = 0.05;
+  start.volume = bg.volume = 0.07;
   bg.loop = true;
   correct.volume = 0.4;
   wrong.volume = 0.2;
@@ -97,7 +94,7 @@ async function pickWord() {
   } else {
     await fetchWordFromAPI();
   }
-  unFilteredHint = hint;
+  unFilteredHint.unshift(hint);
   processHint();
   displayWord();
 }
@@ -105,8 +102,9 @@ async function pickWord() {
 async function fetchWordFromAPI() {
   try {
     elements.overlay.style.display = 'flex';
-    const { randomWord, hint: apiHint } = await fetchRandomWordAndHint();
+    const { randomWord, definition: apiHint, synonyms } = await fetchRandomWordAndHint();
     randWord = randomWord.toLowerCase();
+    synonym = synonyms;
     hint = apiHint;
   } catch (error) {
     console.error("Error fetching random word and hint:", error);
@@ -221,9 +219,10 @@ function toggleSettings() {
 
 function toggleHint(show) {
   elements.popup.style.display = show ? "flex" : "none";
+  playSound(click, 0.153);
   if (show) {
-    elements.output.innerText = hint;
-    playSound(click, 0.153);
+    elements.output.innerHTML = hint;
+    elements.synDisplay.innerText = `Synonyms : ${synonym}`;
     pop_up_animation();
     myScore = (myScore === 0 ? myScore = 0 : myScore -= 10);
     displayScore(false);
@@ -405,14 +404,6 @@ function confettiAnimation() {
 
     createConfetti(particleCount, randomInRange(0.4, 0.6));
   }, 250);
-}
-
-function createConfetti(particleCount, x, defaults = {}) {
-  confetti({
-    ...defaults,
-    particleCount,
-    origin: { x, y: Math.random() - 0.2 },
-  });
 }
 
 function disableAllButtons() {

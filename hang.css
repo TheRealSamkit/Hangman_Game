@@ -129,16 +129,16 @@ body {
 
 @keyframes floatAndColorChange {
     0% {
-        transform: translateY(0); /* Starting position */
-        background-color: #1E1E1E; /* Starting background color */
+        transform: translateY(0); 
+        background-color: #1E1E1E; 
     }
     50% {
-        transform: translateY(-5px); /* Float upwards */
-        background-color: #2C2C2C; /* Change to a darker shade */
+        transform: translateY(-5px);
+        background-color: #2C2C2C; 
     }
     100% {
-        transform: translateY(0); /* Return to the original position */
-        background-color: #1E1E1E; /* Return to original color */
+        transform: translateY(0);
+        background-color: #1E1E1E;
     }
 }
 
@@ -409,19 +409,18 @@ h2 {
 
 .output {
     font-size: 1.7rem;
-    text-align: center;
+    text-align:center;
     font-weight: 500;
-    margin: 1rem;
+    margin: 0.5rem;
     color: var(--text-color);
 }
-/* Dark overlay */
 #overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.8); 
     display: none;
     justify-content: center;
     align-items: center;
@@ -429,7 +428,6 @@ h2 {
     z-index: 1000;
   }
   
-  /* Loader Animation */
   .loader {
     width: 48px;
     height: 48px;
@@ -457,7 +455,7 @@ h2 {
     position: absolute;
     width: 80px;
     height: 80px;
-    background-image: url('assets/blood.png'); /* Replace with your image */
+    background-image: url('assets/blood.png'); 
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0;
@@ -484,13 +482,11 @@ h2 {
     }
   }
       
-  /* Spinning animation */
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
   
-/* Background for mobile devices */
 @media only screen and (max-width: 767px) {
     .container {
         height: auto;
@@ -498,9 +494,9 @@ h2 {
     }
 
     
-.output {
-    font-size: 1.3rem;
-}
+    .output {
+    font-size: 1.1rem;
+    }
 
     .hang {
         height: auto;
